@@ -37,16 +37,16 @@ pipeline {
            }
        }
 
-       stage ('Test application') {
-           agent any
-           steps {
-               script{
-                   sh '''
-                       curl http://localhost:80 | grep -iq "Dimension"
-                   '''
-               }
-           }
-       }
+    //    stage ('Test application') {
+    //        agent any
+    //        steps {
+    //            script{
+    //                sh '''
+    //                    curl http://localhost:80 | grep -iq "Dimension"
+    //                '''
+    //            }
+    //        }
+    //    }
 
        stage ('clean env and save artifact') {
            agent any
