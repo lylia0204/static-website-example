@@ -7,7 +7,6 @@ pipeline {
         EC2_PRODUCTION_HOST = "34.207.91.171"
         USERNAME = "lilya0204"
         CONTAINER_NAME = "static_website"
-        // EC2_PRODUCTION_HOST = "54.88.166.62"
     }
 
     agent none
@@ -76,7 +75,7 @@ pipeline {
                         script{
 
                             sh'''
-                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                             '''
                         }
                     }
@@ -98,7 +97,7 @@ pipeline {
                             }
 
                             sh'''
-                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                             '''
                         }
                     }
