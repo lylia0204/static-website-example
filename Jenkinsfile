@@ -41,7 +41,7 @@ pipeline {
            steps {
                script{
                    sh '''
-                       curl http://localhost:5000 | grep -iq "Dimension lilya"
+                       curl http://localhost:5000 | grep -iq "lilya"
                    '''
                }
            }
