@@ -6,7 +6,7 @@ pipeline {
         //STAGING = "michael-ajc-staging-env"
         //PRODUCTION = "michael-ajc-prod-env"
         USERNAME = "drmcy"
-        CONTAINER_NAME = "staticwebsite2"
+        CONTAINER_NAME = "staticwebsite"
         EC2_STAGING_HOST = "3.95.171.239"
         EC2_PRODUCTION_HOST = "54.144.144.1"
     }
@@ -31,7 +31,7 @@ pipeline {
                    sh '''
                        docker stop $CONTAINER_NAME || true
                        docker rm $CONTAINER_NAME || true
-                       docker run --name $CONTAINER_NAME -d -e PORT=5001 -p 5001:5001 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                       docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                        sleep 5
                    '''
                }
