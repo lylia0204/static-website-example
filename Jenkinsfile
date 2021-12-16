@@ -9,7 +9,7 @@ pipeline {
         CONTAINER_NAME = "static_website"
     }
 
-    agent none
+      agent none
 
     stages{
 
@@ -29,19 +29,19 @@ pipeline {
                    sh '''
                        docker stop $CONTAINER_NAME || true
                        docker rm $CONTAINER_NAME || true
-                       docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
-                       sleep 5
+                       docker run --name $CONTAINER_NAME -d -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                       sleep 6
                    '''
                }
            }
        }
 
-       stage ('Test application') {
+       stage ('Test container') {
            agent any
            steps {
                script{
                    sh '''
-                       curl http://localhost:5000 | grep -iq "lilya"
+                       curl http://localhost:5000 | grep -iq "Lilya"
                    '''
                }
            }
@@ -64,52 +64,53 @@ pipeline {
                }
            }
        }
+
         stage('Deploy app on EC2-cloud Staging') {
-            agent any
-            when{
-               expression{ GIT_BRANCH == 'origin/master'}
-            }
-            steps{
-                withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        script{
-
+        agent any
+        when{
+            expression{ GIT_BRANCH == 'origin/master'}
+        }
+        steps{
+            withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{ 
                             sh'''
-                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker stop $CONTAINER_NAME || true
+								ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker rm $CONTAINER_NAME || true
+								ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                             '''
                         }
                     }
                 }
             }
         }
+
+
         stage('Deploy app on EC2-cloud Production') {
-            agent any
-            when{
-               expression{ GIT_BRANCH == 'origin/master'}
-            }
-            steps{
-                withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
-                    catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                        script{ 
-
-                            timeout(time: 15, unit: "MINUTES") {
-                                input message: 'Do you want to approve the deploy in production?', ok: 'Yes'
-                            }
-
-                            sh'''
-                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
-                            '''
+        agent any
+        when{
+            expression{ GIT_BRANCH == 'origin/master'}
+        }
+        steps{
+            withCredentials([sshUserPrivateKey(credentialsId: "ec2_prod_private_key", keyFileVariable: 'keyfile', usernameVariable: 'NUSER')]) {
+                catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                    script{ 
+                        
+                        timeout(time: 15, unit: "MINUTES") {
+                            input message: 'Do you want to approve the deploy in production?', ok: 'Yes'
                         }
+
+                        sh'''
+                                ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker stop $CONTAINER_NAME || true
+								ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker rm $CONTAINER_NAME || true
+								ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d  -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                        '''
                     }
                 }
             }
         }
-
-
-
-
+        }
     }
-
     post {
         success{
             slackSend (color: '#00FF00', message: "SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
@@ -118,5 +119,4 @@ pipeline {
             slackSend (color: '#FF0000', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})")
         }
     }
-
 }
