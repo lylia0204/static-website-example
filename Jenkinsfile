@@ -2,9 +2,6 @@ pipeline {
 
     environment {
         IMAGE_NAME = "static_site"
-        //IMAGE_TAG = "ajc-2.1"
-        //STAGING = "michael-ajc-staging-env"
-        //PRODUCTION = "michael-ajc-prod-env"
         USERNAME = "drmcy"
         CONTAINER_NAME = "static_site"
         EC2_STAGING_HOST = "3.95.171.239"
@@ -31,7 +28,7 @@ pipeline {
                    sh '''
                        docker stop $CONTAINER_NAME || true
                        docker rm $CONTAINER_NAME || true
-                       docker run --name $CONTAINER_NAME -d -e PORT=5001 -p 5001:5001 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                       docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                        sleep 5
                    '''
                }
@@ -77,7 +74,7 @@ pipeline {
                 catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                     script{
                         sh'''
-                            ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -p 5001:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                            ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_STAGING_HOST} docker run --name $CONTAINER_NAME -d -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                         '''
                     }
                 }
@@ -98,7 +95,7 @@ pipeline {
                             input message: 'Do you want to approve the deploy in production?', ok: 'Yes'
                         }
                         sh'''
-                            ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -p 5001:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                            ssh -o StrictHostKeyChecking=no -i ${keyfile} ${NUSER}@${EC2_PRODUCTION_HOST} docker run --name $CONTAINER_NAME -d -p 5000:80 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                         '''
                     }
                 }
