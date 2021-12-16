@@ -6,7 +6,7 @@ pipeline {
         //STAGING = "michael-ajc-staging-env"
         //PRODUCTION = "michael-ajc-prod-env"
         USERNAME = "drmcy"
-        CONTAINER_NAME = "staticwebsite"
+        CONTAINER_NAME = "staticwebsite1"
         EC2_STAGING_HOST = "3.95.171.239"
         EC2_PRODUCTION_HOST = "54.144.144.1"
     }
