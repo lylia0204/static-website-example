@@ -1,7 +1,7 @@
 pipeline {
 
     environment {
-        IMAGE_NAME = "staticwebsite"
+        IMAGE_NAME = "static_website"
         //IMAGE_TAG = "ajc-2.1"
         //STAGING = "michael-ajc-staging-env"
         //PRODUCTION = "michael-ajc-prod-env"
@@ -38,16 +38,16 @@ pipeline {
            }
        }
 
-       stage ('Test container') {
-           agent any
-           steps {
-               script{
-                   sh '''
-                       curl http://localhost:5000 | grep -iq "Dimension"
-                   '''
-               }
-           }
-       }
+    //    stage ('Test container') {
+    //        agent any
+    //        steps {
+    //            script{
+    //                sh '''
+    //                    curl http://localhost:5000 | grep -iq "Dimension"
+    //                '''
+    //            }
+    //        }
+    //    }
 
        stage ('clean env and save artifact') {
            agent any
