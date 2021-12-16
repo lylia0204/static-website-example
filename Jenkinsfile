@@ -1,12 +1,12 @@
 pipeline {
 
     environment {
-        IMAGE_NAME = "static_website"
+        IMAGE_NAME = "staticwebsite"
         //IMAGE_TAG = "ajc-2.1"
         //STAGING = "michael-ajc-staging-env"
         //PRODUCTION = "michael-ajc-prod-env"
         USERNAME = "drmcy"
-        CONTAINER_NAME = "static_website"
+        CONTAINER_NAME = "staticwebsite"
         EC2_STAGING_HOST = "3.95.171.239"
         EC2_PRODUCTION_HOST = "54.144.144.1"
     }
