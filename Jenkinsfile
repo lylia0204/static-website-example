@@ -31,7 +31,7 @@ pipeline {
                    sh '''
                        docker stop $CONTAINER_NAME || true
                        docker rm $CONTAINER_NAME || true
-                       docker run --name $CONTAINER_NAME -d -e PORT=5000 -p 5000:5000 $USERNAME/$IMAGE_NAME:$BUILD_TAG
+                       docker run --name $CONTAINER_NAME -d -e PORT=5001 -p 5001:5001 $USERNAME/$IMAGE_NAME:$BUILD_TAG
                        sleep 5
                    '''
                }
