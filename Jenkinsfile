@@ -7,7 +7,7 @@ pipeline {
         EC2_PRODUCTION_HOST = "34.207.91.171"
         USERNAME = "lilya0204"
         CONTAINER_NAME = "static_website"
-        EC2_PRODUCTION_HOST = "54.88.166.62"
+        // EC2_PRODUCTION_HOST = "54.88.166.62"
     }
 
     agent none
