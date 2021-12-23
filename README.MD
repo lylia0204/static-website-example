@@ -3,6 +3,7 @@ Static Website Example
 
 To be used with Cloud Academy labs.
 
+[![Build Status](http://18.116.73.2:8080/buildStatus/icon?job=Ec2-cloud-lilya)](http://18.116.73.2:8080/job/Ec2-cloud-lilya/)
 
 License
 ----------------------
